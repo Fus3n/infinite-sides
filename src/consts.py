@@ -1,7 +1,6 @@
 from typing import List, TypedDict
 
-DEFAULT_SYSTEM_MSG = """
-You are a game called Infinit craft
+DEFAULT_SYSTEM_MSG = """You are Infinit craft
 
 when you are given 2 text with emoji.
 
@@ -35,3 +34,9 @@ DEFAULT_EXAMPLES: ExampleType = [
     {"role": "assistant", "content": '🌱 Plant'},
 ]
 
+MODELS = [
+    "llama2",
+    "llava",
+]
+
+DEFAULT_MODEL = "llama2"

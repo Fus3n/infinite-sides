@@ -14,6 +14,7 @@ class BackendLLM:
         self.conf_manager = ConfigManger()
         conf = self.conf_manager.get_config()
         self.base_url: str = conf["base_url"]
+        self.model: str = conf["model"]
         self.simple_check()
 
         self.examples = DEFAULT_EXAMPLES
@@ -32,19 +33,26 @@ class BackendLLM:
                 self.base_url += "/v1"
             self.conf_manager.set_base_url(self.base_url)
 
-    def generate_result(self, first: str, second: str, model = "llama2") -> tuple[str | None, str | None]:
-        if not first or not second:
-            return None, "Invalid Input"
-        
-        # TODO: don't check it every generation.
-        if self.base_url != (new_base_url := self.conf_manager.get_key("base_url")):
+    def reload_settings(self):
+        conf = self.conf_manager.get_config()
+        if self.base_url != (new_base_url := conf["base_url"]):
             self.base_url = new_base_url
             self.simple_check()
             self.__client = OpenAI(
                 base_url = self.base_url,
                 api_key="ollama",
             )
-            
+
+        self.system_msg = conf["system_msg"]
+        self.model = conf["model"]
+
+    def generate_result(self, first: str, second: str) -> tuple[str | None, str | None]:
+        if not first or not second:
+            return None, "Invalid Input"
+        
+        # TODO: don't check it every generation.
+        self.reload_settings()
+        
         result = f'"{first} + {second}"'
 
         messages = [
@@ -55,9 +63,9 @@ class BackendLLM:
 
         try:
             response = self.__client.chat.completions.create(
-                model=model,
+                model=self.model,
                 messages=messages,
-                max_tokens=15,
+                max_tokens=10,
                 n=1,
                 temperature=0,
                 top_p=1,  

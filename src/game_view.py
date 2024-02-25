@@ -48,15 +48,15 @@ class GameView(QGraphicsView):
         self.sc.addItem(chip)  
         self.chips.append(chip)
 
-    def chip_connect(self, chip1, chip2):
-        # if self.task.isRunning():
-        #     return
-        
+    def chip_connect(self, chip1, chip2, debug=False):
         text1 = chip1.toPlainText()
         text2 = chip2.toPlainText()
         chip1.loading = True
         chip2.loading = True
-        print("Generting for", text1, text2)        
+        
+        if debug:
+            print("Generting for", text1, text2)       
+            
         self.task.update_text(chip1, chip2)
         self.task.start()
 

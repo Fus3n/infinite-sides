@@ -1,6 +1,6 @@
 import json, os
 
-from consts import DEFAULT_BASE_URL, DEFAULT_SYSTEM_MSG
+from consts import DEFAULT_BASE_URL, DEFAULT_SYSTEM_MSG, DEFAULT_MODEL
 
 class ConfigManger:
 
@@ -23,6 +23,8 @@ class ConfigManger:
                 config["base_url"] = DEFAULT_BASE_URL
             if "system_msg" not in config:
                 config["system_msg"] = DEFAULT_SYSTEM_MSG
+            if "model" not in config:
+                config["model"] = DEFAULT_MODEL
             self.set_config(config)
 
     def get_config(self):

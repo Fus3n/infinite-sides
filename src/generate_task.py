@@ -27,6 +27,5 @@ class GenerateTask(QThread):
             self.finished.emit(self.chip1, self.chip2, "", err)
             return
 
-        print("Result", result)
         self.finished.emit(self.chip1, self.chip2, result, err)
         return True

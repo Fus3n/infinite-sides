@@ -22,6 +22,7 @@ import qdarkstyle
 
 from chip_widget import Chip
 from game_view import GameView
+from settings import Settings
 
 from configmanager import ConfigManger
 
@@ -40,6 +41,7 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
+        self.setMouseTracking(True)
         self.conf = ConfigManger()
         self.setWindowTitle("InfiniteSides")
         self.setMinimumSize(1000, 700)
@@ -132,18 +134,18 @@ class MainWindow(QMainWindow):
 
     def init_menu(self):
         menu = self.menuBar()
-        file_menu = menu.addMenu("Settings")
+        app_menu = menu.addMenu("App")
         theme_menu = menu.addMenu("Theme")
 
         # File menu
-        system_prmpt_action = file_menu.addAction("System Prompt")
-        system_prmpt_action.triggered.connect(lambda: print("sys"))
+        settings_window_action = app_menu.addAction("Settings")
+        settings_window_action.triggered.connect(self.open_settings)
 
-        select_model_action = file_menu.addAction("Select Model")
-        select_model_action.triggered.connect(lambda: print("sys"))
+        # select_model_action = file_menu.addAction("Select Model")
+        # select_model_action.triggered.connect(lambda: print("sys"))
 
-        set_base_url_action = file_menu.addAction("Set Base URL")
-        set_base_url_action.triggered.connect(self.set_base_url)
+        # set_base_url_action = file_menu.addAction("Set Base URL")
+        # set_base_url_action.triggered.connect(self.set_base_url)
 
 
         # Theme menu
@@ -160,7 +162,6 @@ class MainWindow(QMainWindow):
     def set_theme_light(self):
         self.theme = "light"
         QApplication.instance().setStyleSheet("")
-        print('w')
     
     def set_base_url(self):
         dialog = QDialog()
@@ -205,6 +206,10 @@ class MainWindow(QMainWindow):
 
     def show_error(self, msg):
         QMessageBox.critical(self, "Error", msg)
+
+    def open_settings(self):
+        settings = Settings(self)
+        settings.exec()
 
 
 if __name__ == "__main__":

@@ -2,11 +2,13 @@
 
 Infinite Craft but in pyside6 and in your computer using local LLM with [ollama](https://github.com/ollama/ollama) and also has a dark mode.
 
+Create your own infinite Crafting game 
+
 ## Screenshots
 
 <p>
-  <img src="./screenshots/screen-1.png" width="63%" />
-  <img src="./screenshots/screen-2.png" width="35%" />
+  <img src="./screenshots/screen-1.png" width="55%" />
+  <img src="./screenshots/screen-2.png" width="40%" />
 </p>
 
 
@@ -36,6 +38,15 @@ Linux (not tested):
 git clone https://github.com/Fus3n/infinite-sides
 python3 start.py
 ```
+
+### Settings
+
+For app settings you can open `App > Settings`
+and set your desired prompt and model.
+You can also set the base URL that ollama runs on, if it ever changes you need to set that, for now its using the default one. 
+
+You can also port forward using ngrok and use that url if you want and share it with your friends.
+
 
 > This software is still under development, alot of features are missing and alot of bugs, the plan is to make it so people can make different types of crafitng game for example a minecraft edition or one thats only related a specific subject and people can make custom system prompts and share with others and enjoy it
 
