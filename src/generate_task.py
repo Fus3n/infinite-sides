@@ -5,7 +5,7 @@ from backend import BackendLLM
 
 class GenerateTask(QThread):
 
-    finished = Signal(QGraphicsTextItem, QGraphicsTextItem, str)
+    finished = Signal(QGraphicsTextItem, QGraphicsTextItem, str, str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -19,9 +19,14 @@ class GenerateTask(QThread):
 
     def run(self):
         if not self.chip1 and not self.chip2:
-            raise Exception("Generate task got invalid or no text")
+            self.finished.emit(self.chip1, self.chip2, "", "Generate task got invalid or no text")
             
-        result = self.llm.generate_result(self.chip1.toPlainText(), self.chip2.toPlainText())
+        result, err = self.llm.generate_result(self.chip1.toPlainText(), self.chip2.toPlainText())
+        
+        if err:
+            self.finished.emit(self.chip1, self.chip2, "", err)
+            return
+
         print("Result", result)
-        self.finished.emit(self.chip1, self.chip2, result)
+        self.finished.emit(self.chip1, self.chip2, result, err)
         return True

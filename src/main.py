@@ -1,5 +1,5 @@
 from typing import Literal
-import sys
+import sys, os
 
 from PySide6.QtWidgets import (
     QApplication,
@@ -41,8 +41,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.conf = ConfigManger()
-
-        self.setWindowTitle("InfCraft")
+        self.setWindowTitle("InfiniteSides")
         self.setMinimumSize(1000, 700)
         # set theme here
         self.theme: Literal["dark"] | Literal["light"] = "dark"
@@ -202,12 +201,17 @@ class MainWindow(QMainWindow):
             if base_url == "":
                 return
 
-            self.conf.set_base_url(base_url)            
+            self.conf.set_base_url(base_url.strip())            
+
+    def show_error(self, msg):
+        QMessageBox.critical(self, "Error", msg)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     if window.theme == "dark":
-        app.setStyleSheet(qdarkstyle.load_stylesheet())
+        app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyside6'))
+
     window.show()
     app.exec()

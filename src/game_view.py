@@ -60,10 +60,15 @@ class GameView(QGraphicsView):
         self.task.update_text(chip1, chip2)
         self.task.start()
 
-    def generate_finished(self, chip1: ChipGraphicsItem, chip2: ChipGraphicsItem, result: str):
+    def generate_finished(self, chip1: ChipGraphicsItem, chip2: ChipGraphicsItem, result: str, err_msg: str):
+        
         chip1.loading = False
         chip2.loading = False
-        
+
+        if err_msg:
+            self.main_window.show_error(err_msg)
+            return
+
         scene_pos = chip2.scenePos()
 
         self.scene().removeItem(chip1)

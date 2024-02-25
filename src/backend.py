@@ -1,0 +1,72 @@
+from openai import OpenAI, NotFoundError
+from consts import DEFAULT_EXAMPLES
+from configmanager import ConfigManger
+
+class BackendLLM:
+    """
+    base_url: Base url for ollama the default is `http://localhost:11434/v1`
+    system_msg: The system message for the LLM
+    examples (optional): The examples help it understand the game, default is `[{"role": "user", "content": '"🌍 Earth + 💧 Water"'}, {"role": "assistant", "content": '🌱 Plant'}]`
+    """
+
+    def __init__(self) -> None:
+        
+        self.conf_manager = ConfigManger()
+        conf = self.conf_manager.get_config()
+        self.base_url: str = conf["base_url"]
+        self.simple_check()
+
+        self.examples = DEFAULT_EXAMPLES
+        self.system_msg = conf["system_msg"]
+
+        self.__client = OpenAI(
+            base_url = self.base_url,
+            api_key="ollama",
+        )
+
+    def simple_check(self):
+        if not self.base_url.endswith("/v1"):
+            if self.base_url[-1] == "/":
+                self.base_url += "v1"
+            else:
+                self.base_url += "/v1"
+            self.conf_manager.set_base_url(self.base_url)
+
+    def generate_result(self, first: str, second: str, model = "llama2") -> tuple[str | None, str | None]:
+        if not first or not second:
+            return None, "Invalid Input"
+        
+        # TODO: don't check it every generation.
+        if self.base_url != (new_base_url := self.conf_manager.get_key("base_url")):
+            self.base_url = new_base_url
+            self.simple_check()
+            self.__client = OpenAI(
+                base_url = self.base_url,
+                api_key="ollama",
+            )
+            
+        result = f'"{first} + {second}"'
+
+        messages = [
+            {"role": "system", "content": self.system_msg},     
+        ]
+        messages.extend(self.examples)
+        messages.append({"role": "user", "content": result})
+
+        try:
+            response = self.__client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=15,
+                n=1,
+                temperature=0,
+                top_p=1,  
+            )
+        except NotFoundError:
+            return None, "Invalid Base Url"
+
+        return response.choices[0].message.content, None
+
+if __name__ == '__main__':
+    llm = BackendLLM()
+    print(llm.generate_result("🌊 Wave", "💧 Water"))
