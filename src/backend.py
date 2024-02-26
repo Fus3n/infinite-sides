@@ -25,6 +25,8 @@ class BackendLLM:
             api_key="ollama",
         )
 
+        self.final_examples = []
+
     def simple_check(self):
         if not self.base_url.endswith("/v1"):
             if self.base_url[-1] == "/":
@@ -46,6 +48,17 @@ class BackendLLM:
         self.system_msg = conf["system_msg"]
         self.model = conf["model"]
 
+    def convert_examples(self):
+        self.final_examples.clear()
+        for example in self.examples:
+            self.final_examples.extend(
+                [
+                    {"role": "user", "content": f'"{example["from_str"]}"'},
+                    {"role": "assistant", "content": example["result_str"]},
+                ]
+            )
+
+
     def generate_result(self, first: str, second: str) -> tuple[str | None, str | None]:
         if not first or not second:
             return None, "Invalid Input"
@@ -55,11 +68,13 @@ class BackendLLM:
         
         result = f'"{first} + {second}"'
 
+        self.convert_examples()
         messages = [
             {"role": "system", "content": self.system_msg},     
         ]
-        messages.extend(self.examples)
+        messages.extend(self.final_examples)
         messages.append({"role": "user", "content": result})
+        print(messages)
 
         try:
             response = self.__client.chat.completions.create(

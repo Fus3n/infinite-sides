@@ -23,15 +23,21 @@ And the emoji and text can be anything, it is not limited to the example i gave,
 """
 
 class ExampleEntry(TypedDict):
-    role: str
-    content: str
+    from_str: str
+    result_str: str
+
 ExampleType = List[ExampleEntry]
 
 
 DEFAULT_BASE_URL = "http://localhost:11434/v1"
 DEFAULT_EXAMPLES: ExampleType = [
-    {"role": "user", "content": '"🌍 Earth + 💧 Water"'},
-    {"role": "assistant", "content": '🌱 Plant'},
+    {"from_str": "🌍 Earth + 💧 Water", "result_str": "🌱 Plant"},
+    {"from_str": "🌱 Oak Saplings + 🦴 Bone Meal", "result_str": "🌳 Oak Tree"},
+    {"from_str": "🌿 Wheat + 🌾 Wheat", "result_str": "🍞 Bread"},
+    {"from_str": "🥚 Egg + 🥚 Egg", "result_str": "🐣 Chick"},
+    {"from_str": "🧊 Ice Block + 🔥 Torch", "result_str": "💧 Water Source"},
+    {"from_str": "🧱 Brick + 🍶 Water Bottle", "result_str": "🏺 Clay"},
+    {"from_str": "🏹 Bow + 🎣 Fishing Rod" , "result_str": "🛶 Trident"}
 ]
 
 MODELS = [
