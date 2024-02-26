@@ -7,8 +7,8 @@ Create your own infinite Crafting game
 ## Screenshots
 
 <p>
-  <img src="./screenshots/screen-1.png" width="55%" />
-  <img src="./screenshots/screen-2.png" width="40%" />
+  <img src="./screenshots/screen-1.png" width="45%" />
+  <img src="./screenshots/screen-2.png" width="45%" />
 </p>
 
 

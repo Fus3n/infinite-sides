@@ -1,5 +1,5 @@
 from typing import Literal
-import sys, os
+import sys, os, json
 
 from PySide6.QtWidgets import (
     QApplication,
@@ -28,7 +28,7 @@ from configmanager import ConfigManger
 
 class ChipList(QListWidget):
 
-    def addChip(self, chip: Chip):
+    def add_chip(self, chip: Chip):
         item = QListWidgetItem()
         item.setSizeHint(chip.sizeHint())  
         item.setFlags(Qt.NoItemFlags)
@@ -47,6 +47,9 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1000, 700)
         # set theme here
         self.theme: Literal["dark"] | Literal["light"] = "dark"
+
+        # Game
+        self.game_file = "./game-data.json"     
 
         self.frame = QFrame()
         
@@ -88,12 +91,41 @@ class MainWindow(QMainWindow):
         self.sidebar.addWidget(self.chips_list)
         self.sidebar.addWidget(self.search_bar)
 
-        self.populate_default_chips()
+        self.load_game_data()
 
         self.lay.addLayout(self.sidebar)
         self.setCentralWidget(self.frame)
 
         self.init_menu()
+
+    def load_game_data(self):
+        if os.path.exists(self.game_file):
+            self.load_chips()
+            return
+
+        self.populate_default_chips()      
+        self.save_chips()
+
+    def load_chips(self):
+        with open(self.game_file, "r") as f:
+            data = json.load(f)
+            if not data:
+                self.populate_default_chips()
+                return
+            
+            for chip in data:
+                chip = Chip(chip, self.game_view.add_chip, self.theme)
+                self.chips_list.add_chip(chip)
+
+    def save_chips(self):
+        chips = []
+        for idx in range(self.chips_list.count()):
+            item = self.chips_list.item(idx)
+            widget = self.chips_list.itemWidget(item)
+            chips.append(widget.text())
+            
+        with open(self.game_file, "w") as f:
+            json.dump(chips, f)
 
     def populate_default_chips(self):
         earth_chip = Chip("🌍 Earth", self.game_view.add_chip, self.theme)
@@ -101,10 +133,10 @@ class MainWindow(QMainWindow):
         fire_chip = Chip("🔥 Fire", self.game_view.add_chip, self.theme)
         air_chip = Chip("💨 Air", self.game_view.add_chip, self.theme)
 
-        self.chips_list.addChip(earth_chip)
-        self.chips_list.addChip(water_chip)
-        self.chips_list.addChip(fire_chip)
-        self.chips_list.addChip(air_chip)
+        self.chips_list.add_chip(earth_chip)
+        self.chips_list.add_chip(water_chip)
+        self.chips_list.add_chip(fire_chip)
+        self.chips_list.add_chip(air_chip)
 
     def reset_list(self):
         dialog = QMessageBox()
@@ -137,16 +169,12 @@ class MainWindow(QMainWindow):
         app_menu = menu.addMenu("App")
         theme_menu = menu.addMenu("Theme")
 
-        # File menu
+        # App menu
         settings_window_action = app_menu.addAction("Settings")
         settings_window_action.triggered.connect(self.open_settings)
 
-        # select_model_action = file_menu.addAction("Select Model")
-        # select_model_action.triggered.connect(lambda: print("sys"))
-
-        # set_base_url_action = file_menu.addAction("Set Base URL")
-        # set_base_url_action.triggered.connect(self.set_base_url)
-
+        reset_all_action = app_menu.addAction("Reset All")
+        reset_all_action.triggered.connect(self.reset_chips)
 
         # Theme menu
         dark_action = theme_menu.addAction("Dark")
@@ -210,6 +238,20 @@ class MainWindow(QMainWindow):
     def open_settings(self):
         settings = Settings(self)
         settings.exec()
+
+    def reset_chips(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Reset Confirmation")
+        msg.setText("Are you sure you want to reset everything? This will remove all the cips you created.")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        result = msg.exec()
+        if result == QMessageBox.Yes:
+            self.chips_list.clear()
+            self.populate_default_chips()
+            self.game_view.sc.clear()
+            self.save_chips()
+            self.game_view.update()
 
 
 if __name__ == "__main__":

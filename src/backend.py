@@ -53,8 +53,8 @@ class BackendLLM:
         for example in self.examples:
             self.final_examples.extend(
                 [
-                    {"role": "user", "content": f'"{example["from_str"]}"'},
-                    {"role": "assistant", "content": example["result_str"]},
+                    {"role": "user", "content": f'"{example["from_str"].strip()}"'},
+                    {"role": "assistant", "content": example["result_str"].strip()},
                 ]
             )
 
@@ -74,7 +74,6 @@ class BackendLLM:
         ]
         messages.extend(self.final_examples)
         messages.append({"role": "user", "content": result})
-        print(messages)
 
         try:
             response = self.__client.chat.completions.create(

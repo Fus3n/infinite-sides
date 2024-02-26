@@ -3,9 +3,6 @@ from typing import Literal
 from PySide6.QtWidgets import (
     QGraphicsView, 
     QGraphicsScene,
-    QGraphicsTextItem,
-    QStyleOptionGraphicsItem,
-    QWidget
 )
 
 from PySide6.QtCore import Qt, Signal
@@ -90,4 +87,5 @@ class GameView(QGraphicsView):
                 return
 
         chip = Chip(result, self.add_chip, self.theme)
-        self.main_window.chips_list.addChip(chip)  
+        self.main_window.chips_list.add_chip(chip)  
+        self.main_window.save_chips()

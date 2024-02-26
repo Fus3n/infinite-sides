@@ -3,4 +3,5 @@
 /build
 /venv
 inf_config.json
+game-data.json
 /output
