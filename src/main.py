@@ -29,6 +29,14 @@ from configmanager import ConfigManger
 class ChipList(QListWidget):
 
     def add_chip(self, chip: Chip):
+        """        Add a chip to the list.
+
+        This method adds a chip to the list by creating a QListWidgetItem with the size hint of the chip and setting it as the item widget.
+
+        Args:
+            chip (Chip): The chip to be added to the list.
+        """
+
         item = QListWidgetItem()
         item.setSizeHint(chip.sizeHint())  
         item.setFlags(Qt.NoItemFlags)
@@ -39,6 +47,11 @@ class ChipList(QListWidget):
 class MainWindow(QMainWindow):
 
     def __init__(self) -> None:
+        """        Initialize the InfiniteSides application.
+
+        This method sets up the InfiniteSides application by initializing various components such as the game view, sidebar, buttons, chip list, search bar, and menu.
+        """
+
         super().__init__()
 
         self.setMouseTracking(True)
@@ -99,6 +112,15 @@ class MainWindow(QMainWindow):
         self.init_menu()
 
     def load_game_data(self):
+        """        Load game data from the specified file.
+
+        If the game file exists, it loads the chips and returns.
+        If the game file does not exist, it populates default chips and saves them.
+
+        Raises:
+            FileNotFoundError: If the game file does not exist.
+        """
+
         if os.path.exists(self.game_file):
             self.load_chips()
             return
@@ -107,6 +129,19 @@ class MainWindow(QMainWindow):
         self.save_chips()
 
     def load_chips(self):
+        """        Load chips from a JSON file and populate the chips list.
+
+        If the JSON file is empty, it populates the chips list with default chips.
+
+        Args:
+            self (object): The current instance of the class.
+
+
+        Raises:
+            FileNotFoundError: If the specified game file does not exist.
+            json.JSONDecodeError: If the JSON file is not valid.
+        """
+
         with open(self.game_file, "r") as f:
             data = json.load(f)
             if not data:
@@ -118,6 +153,14 @@ class MainWindow(QMainWindow):
                 self.chips_list.add_chip(chip)
 
     def save_chips(self):
+        """        Save the chips list to a file.
+
+        This function retrieves the chips from the chips list, and then saves them to a file in JSON format.
+
+        Args:
+            self: The instance of the class.
+        """
+
         chips = []
         for idx in range(self.chips_list.count()):
             item = self.chips_list.item(idx)
@@ -128,6 +171,14 @@ class MainWindow(QMainWindow):
             json.dump(chips, f)
 
     def populate_default_chips(self):
+        """        Populate the default chips for the game.
+
+        This function creates default chips for Earth, Water, Fire, and Air and adds them to the chips list.
+
+        Args:
+            self (object): The current instance of the class.
+        """
+
         earth_chip = Chip("🌍 Earth", self.game_view.add_chip, self.theme)
         water_chip = Chip("💧 Water",self.game_view.add_chip, self.theme)
         fire_chip = Chip("🔥 Fire", self.game_view.add_chip, self.theme)
@@ -139,6 +190,12 @@ class MainWindow(QMainWindow):
         self.chips_list.add_chip(air_chip)
 
     def reset_list(self):
+        """        Display a confirmation dialog and reset the list if user confirms.
+
+        This function displays a confirmation dialog to the user asking if they want to reset the list. If the user confirms
+        the reset, the function clears the chips list, populates it with default chips, and clears the game view.
+        """
+
         dialog = QMessageBox()
         dialog.setWindowTitle('Reset Confirmation')
         dialog.setText('Are you sure you want to reset?')
@@ -153,6 +210,14 @@ class MainWindow(QMainWindow):
             self.game_view.sc.clear()
 
     def filterItems(self):
+        """        Filter the items in the chips list based on the search text.
+
+        This function filters the items in the chips list based on the search text entered in the search bar. It iterates through each item in the list, retrieves the text from the associated widget, and compares it with the search text. If the search text is found in the item's text, the item is displayed; otherwise, it is hidden.
+
+        Args:
+            self: The object instance.
+        """
+
         search_text = self.search_bar.text()
         for idx in range(self.chips_list.count()):
             item = self.chips_list.item(idx)
@@ -165,6 +230,14 @@ class MainWindow(QMainWindow):
         self.game_view.update()
 
     def init_menu(self):
+        """        Initialize the application menu and theme menu.
+
+        This method sets up the application menu and theme menu in the main window. It adds actions for 'Settings' and 'Reset All' in the app menu, and 'Dark' and 'Light' themes in the theme menu.
+
+        Args:
+            self: The instance of the main window.
+        """
+
         menu = self.menuBar()
         app_menu = menu.addMenu("App")
         theme_menu = menu.addMenu("Theme")
@@ -184,14 +257,39 @@ class MainWindow(QMainWindow):
         light_action.triggered.connect(self.set_theme_light)
 
     def set_theme_dark(self):
+        """        Set the theme to dark and apply the corresponding style sheet to the QApplication instance.
+
+        This method sets the theme attribute to "dark" and applies the dark theme style sheet to the QApplication instance.
+
+        Args:
+            self: The instance of the class.
+        """
+
         self.theme = "dark"
         QApplication.instance().setStyleSheet(qdarkstyle.load_stylesheet())
 
     def set_theme_light(self):
+        """        Set the theme to light.
+
+        This method sets the theme attribute to "light" and resets the style sheet of the QApplication instance.
+
+        Args:
+            self: The instance of the class.
+        """
+
         self.theme = "light"
         QApplication.instance().setStyleSheet("")
     
     def set_base_url(self):
+        """        Set the base URL for the application.
+
+        This method creates a dialog window to allow the user to set the base URL for the application.
+        It prompts the user to input the base URL and saves the input in the application configuration.
+
+        Args:
+            self: The instance of the class.
+        """
+
         dialog = QDialog()
         dialog.setWindowTitle("Set Base URL")
         dialog.setFixedWidth(300)
@@ -233,13 +331,34 @@ class MainWindow(QMainWindow):
             self.conf.set_base_url(base_url.strip())            
 
     def show_error(self, msg):
+        """        Display an error message using a QMessageBox.
+
+        Args:
+            self: The instance of the class.
+            msg (str): The error message to be displayed.
+        """
+
         QMessageBox.critical(self, "Error", msg)
 
     def open_settings(self):
+        """        Open the settings dialog.
+
+        This function creates an instance of the Settings class and executes the settings dialog.
+
+        Args:
+            self: The instance of the current class.
+        """
+
         settings = Settings(self)
         settings.exec()
 
     def reset_chips(self):
+        """        Reset all the chips and the game view.
+
+        This method displays a confirmation message to the user and if the user confirms, it clears the chips list,
+        populates default chips, clears the game view, saves the chips, and updates the game view.
+        """
+
         msg = QMessageBox()
         msg.setWindowTitle("Reset Confirmation")
         msg.setText("Are you sure you want to reset everything? This will remove all the cips you created.")

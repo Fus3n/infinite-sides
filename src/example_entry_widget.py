@@ -8,6 +8,14 @@ from PySide6.QtWidgets import (
 class ExampleEntry(QFrame):
 
     def __init__(self, from_text: str, result_text: str, item) -> None:
+        """        Initialize the class instance with input and result text along with an item.
+
+        Args:
+            from_text (str): The input text.
+            result_text (str): The result text.
+            item: The item associated with the instance.
+        """
+
         super().__init__()
         self.item = item
         self.from_text = from_text
@@ -30,6 +38,11 @@ class ExampleEntry(QFrame):
         self.setLayout(lay)
 
     def remove_item(self):
+        """        Remove the item from the list widget.
+
+        This method removes the item from the list widget by taking its index and removing it from the list.
+        """
+
         l = self.item.listWidget()
         it = l.row(self.item)
         l.takeItem(it)

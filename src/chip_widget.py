@@ -14,6 +14,19 @@ ThemeLiteral = Literal["dark"] | Literal["light"]
 class Chip(QLabel):
 
     def __init__(self, text: str, add_chip_func, theme: ThemeLiteral = "light") -> None:
+        """        Initialize a custom label with text and theme.
+
+        Args:
+            text (str): The text to be displayed on the label.
+            add_chip_func: The function to add a chip to the label.
+            theme (ThemeLiteral?): The theme of the label. Defaults to "light".
+
+
+        Note:
+            The function sets the text, theme, border radius, alignment, background color, color, style sheet,
+            cursor, and fixed height of the label.
+        """
+
         super().__init__(text)
         self.add_chip_func = add_chip_func
         self.theme = theme
@@ -38,12 +51,28 @@ class Chip(QLabel):
         self.setFixedHeight(40)   
 
     def mousePressEvent(self, ev: QMouseEvent) -> None:
+        """        Handle mouse press event.
+
+        This method handles the mouse press event and adds a chip if the left button is pressed.
+
+        Args:
+            ev (QMouseEvent): The mouse event object.
+        """
+
         super().mousePressEvent(ev)
 
         if ev.button() == Qt.LeftButton:
             self.add_chip_func(self)
 
     def mouseMoveEvent(self, e):
+        """        Handle the mouse move event.
+
+        If the left mouse button is pressed, it initiates a drag action using QDrag and QMimeData.
+
+        Args:
+            e (QMouseEvent): The mouse event object.
+        """
+
         if e.buttons() == Qt.LeftButton:
             drag = QDrag(self)
             mime = QMimeData()
@@ -55,6 +84,13 @@ class Chip(QLabel):
 class ChipGraphicsItem(QGraphicsTextItem):
 
     def __init__(self, text: str, theme: ThemeLiteral = "light") -> None:
+        """        Initialize the graphics item with text and theme.
+
+        Args:
+            text (str): The text to be displayed.
+            theme (ThemeLiteral?): The theme of the graphics item. Defaults to "light".
+        """
+
         super().__init__(text)
         self.theme = theme
         self.loading = False
@@ -76,11 +112,30 @@ class ChipGraphicsItem(QGraphicsTextItem):
 
 
     def boundingRect(self):
+        """        Returns the bounding rectangle of the item, adjusted by -4 on each side.
+
+        This method calculates the bounding rectangle of the item using the super class's boundingRect method,
+        and then adjusts the rectangle by -4 on each side.
+
+        Returns:
+            QRectF: The adjusted bounding rectangle of the item.
+        """
+
         # calculate
         rect = super().boundingRect()
         return rect.adjusted(-4, -4, 4, 4)
     
     def paint(self, painter, option, widget):
+        """        Paint the widget using the specified painter and options.
+
+        This method is responsible for painting the widget using the provided painter and options. It sets the pen and brush colors based on the theme and other attributes of the widget.
+
+        Args:
+            painter: QPainter object used for painting.
+            option: QStyleOptionGraphicsItem object specifying the style options for the widget.
+            widget: QWidget object representing the widget to be painted.
+        """
+
         r = self.boundingRect()
 
         themed_bg_color = None
@@ -106,6 +161,15 @@ class ChipGraphicsItem(QGraphicsTextItem):
         painter.drawText(r, Qt.AlignCenter, self.toPlainText())
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent) -> None:
+        """        Handle the mouse press event in the graphics scene.
+
+        This method is called when a mouse press event occurs in the graphics scene. It sets the holding_down flag to True
+        and changes the cursor to a pointing hand cursor. Additionally, it sets the z-value of the object to 1.
+
+        Args:
+            event (QGraphicsSceneMouseEvent): The mouse press event object.
+        """
+
         super().mousePressEvent(event)    
 
         if event.button() == Qt.LeftButton:
@@ -114,6 +178,20 @@ class ChipGraphicsItem(QGraphicsTextItem):
             self.setZValue(1)
 
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
+        """        Handle the mouse release event for the custom QGraphicsTextItem.
+
+        This method is called when the mouse button is released over the QGraphicsTextItem.
+        It checks if the left mouse button was released, sets the cursor to the arrow shape,
+        and updates the holding_down flag if it was previously set. Then, it checks for collision
+        with other items in the scene and emits a signal if a collision is detected.
+
+        Args:
+            event (QGraphicsSceneMouseEvent): The mouse release event object.
+
+            chip_connected: If a collision is detected, this signal is emitted with the current
+            QGraphicsTextItem and the collided item as arguments.
+        """
+
         super().mouseReleaseEvent(event)
 
         if event.button() == Qt.LeftButton:
@@ -136,6 +214,15 @@ class ChipGraphicsItem(QGraphicsTextItem):
         self.setZValue(0)
 
     def mouseMoveEvent(self, event: QGraphicsSceneMouseEvent) -> None:
+        """        Handle the mouse move event for the QGraphicsTextItem.
+
+        This method is responsible for handling the mouse move event for the QGraphicsTextItem. It checks for collision
+        with other items in the scene and sets the merge_clr attribute accordingly.
+
+        Args:
+            event (QGraphicsSceneMouseEvent): The mouse move event.
+        """
+
         super().mouseMoveEvent(event)
         for item in self.scene().items():
             # check if item bounding touching current
