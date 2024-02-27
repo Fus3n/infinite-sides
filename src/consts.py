@@ -42,7 +42,8 @@ DEFAULT_EXAMPLES: ExampleType = [
 
 MODELS = [
     "llama2",
-    "llava",
+    "mistral",
+    "llava"
 ]
 
 DEFAULT_MODEL = "llama2"

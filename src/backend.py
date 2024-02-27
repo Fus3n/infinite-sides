@@ -79,7 +79,7 @@ class BackendLLM:
             response = self.__client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                max_tokens=10,
+                max_tokens=8,
                 n=1,
                 temperature=0,
                 top_p=1,  
