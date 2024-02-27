@@ -19,6 +19,13 @@ from example_entry_widget import ExampleEntry
 class Settings(QDialog):
 
     def __init__(self, parent: QWidget | None = None) -> None:
+        """        Initialize the Settings window.
+
+        Args:
+            parent (QWidget | None): The parent widget. Defaults to None.
+                Description:
+        """
+
         super().__init__(parent)
         self.conf_manager = ConfigManger()
         self.setWindowTitle("Settings")
@@ -107,6 +114,12 @@ class Settings(QDialog):
         self.setLayout(self.dialog_lay)
 
     def save_settings(self):
+        """        Save the settings to the configuration.
+
+        This function saves the settings to the configuration file. It updates the 'model', 'base_url', 'system_msg', and 'examples'
+        in the configuration based on the current values in the UI elements.
+        """
+
         conf = self.conf_manager.get_config()
         conf["model"] = self.models_choice.currentText()
         conf["base_url"] = self.base_url_input.text()
@@ -127,11 +140,29 @@ class Settings(QDialog):
         self.accept()
 
     def reset_settings(self):
+        """        Reset the settings to default values.
+
+        This function resets the settings for the application to their default values.
+
+        Args:
+            self: The object instance.
+        """
+
         self.models_choice.setCurrentText(DEFAULT_MODEL)
         self.base_url_input.setText(DEFAULT_BASE_URL)
         self.system_prompt_input.setText(DEFAULT_SYSTEM_MSG)
 
     def add_example_entry(self, from_txt: str, result_txt: str):
+        """        Add an example entry to the examples list.
+
+        This method creates a new example entry widget using the provided 'from_txt' and 'result_txt' strings,
+        sets its size hint, adds it to the examples list, and sets the widget for the added item.
+
+        Args:
+            from_txt (str): The text for the 'from' field of the example entry.
+            result_txt (str): The text for the 'result' field of the example entry.
+        """
+
         item = QListWidgetItem()
         item.setFlags(Qt.NoItemFlags)
         item_edit = ExampleEntry(from_txt, result_txt, item)
@@ -140,12 +171,29 @@ class Settings(QDialog):
         self.examples_list.setItemWidget(item, item_edit)
 
     def remove_item(self, item: QListWidgetItem):
+        """        Remove an item from the examples list.
+
+        This method removes the specified item from the examples list, updates the configuration manager, and hides the item.
+
+        Args:
+            item (QListWidgetItem): The item to be removed from the examples list.
+        """
+
         self.examples_list.takeItem(self.examples_list.row(item))
         self.conf_manager.remove_example(item.text())
         item.setHidden(True)
         self.examples_list.update()
 
     def add_example(self):
+        """        Display a dialog to add an example.
+
+        This function creates a dialog window with input fields for 'From' and 'Result' values.
+        It then allows the user to save or cancel the input.
+
+        Args:
+            self: The instance of the class.
+        """
+
         dialog = QDialog(self)
         dialog.setWindowTitle("Add Example")
         dialog.setFixedWidth(400)
