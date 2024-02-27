@@ -17,7 +17,7 @@ Create your own infinite Crafting game
 ### Git
 
 Requirements
-- git (not required if you download zip file from [release](https://github.com/Fus3n/flang/releases/latest))
+- git (not required if you download zip file from [release](https://github.com/Fus3n/infinite-sides/releases/latest))
 - python3.10+
 
 Make sure you have [ollama](https://github.com/ollama/ollama) set up already and have atleast one model, currently infinite-sides uses llama2, all the installation guide is in their [github page](https://github.com/ollama/ollama)
