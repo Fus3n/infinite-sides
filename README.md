@@ -30,12 +30,14 @@ But for basics, just install the binary and type this in terminal:
 Windows:
 ```
 git clone https://github.com/Fus3n/infinite-sides
+cd infinite-sides
 .\start.bat
 ```
 Linux (not tested):
 
 ```
 git clone https://github.com/Fus3n/infinite-sides
+cd infinite-sides
 python3 start.py
 ```
 
