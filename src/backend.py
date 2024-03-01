@@ -47,6 +47,7 @@ class BackendLLM:
 
         self.system_msg = conf["system_msg"]
         self.model = conf["model"]
+        self.examples = conf["examples"]
 
     def convert_examples(self):
         self.final_examples.clear()
@@ -57,7 +58,6 @@ class BackendLLM:
                     {"role": "assistant", "content": example["result_str"].strip()},
                 ]
             )
-
 
     def generate_result(self, first: str, second: str) -> tuple[str | None, str | None]:
         if not first or not second:
@@ -74,7 +74,6 @@ class BackendLLM:
         ]
         messages.extend(self.final_examples)
         messages.append({"role": "user", "content": result})
-
         try:
             response = self.__client.chat.completions.create(
                 model=self.model,

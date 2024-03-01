@@ -31,13 +31,13 @@ ExampleType = List[ExampleEntry]
 
 DEFAULT_BASE_URL = "http://localhost:11434/v1"
 DEFAULT_EXAMPLES: ExampleType = [
-    {"from_str": "🌍 Earth + 💧 Water", "result_str": "🌱 Plant"},
-    {"from_str": "🌱 Oak Saplings + 🦴 Bone Meal", "result_str": "🌳 Oak Tree"},
-    {"from_str": "🌿 Wheat + 🌾 Wheat", "result_str": "🍞 Bread"},
-    {"from_str": "🥚 Egg + 🥚 Egg", "result_str": "🐣 Chick"},
-    {"from_str": "🧊 Ice Block + 🔥 Torch", "result_str": "💧 Water Source"},
-    {"from_str": "🧱 Brick + 🍶 Water Bottle", "result_str": "🏺 Clay"},
-    {"from_str": "🏹 Bow + 🎣 Fishing Rod" , "result_str": "🛶 Trident"}
+    {"from_str": "🌍 Earth + ", "result_str": "🌱 Plant"},
+    {"from_str": "💨 Wind + 🌱 Plant", "result_str": "🌼 Dandelion"},
+    {"from_str": "🌍 Earth + 🔥 Fire", "result_str": "🌋 Lava"},
+    {"from_str": "🌋 Lava + 🌋Lava", "result_str": "🌋 Volcano"},
+    {"from_str": "💧 Water + 💨 Wind", "result_str": "🌊 Wave"},
+    {"from_str": "🏔️ Mountain + ❄️ Snow", "result_str": "🌨️ Avalanche"},
+    {"from_str": "🌞 Sun + ☔ Rain", "result_str": "🌈 Rainbow"},
 ]
 
 MODELS = [

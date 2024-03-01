@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (
     QTextEdit, 
     QComboBox,
     QListWidget,
-    QListWidgetItem
+    QListWidgetItem,
+    QMessageBox
 )
 from PySide6.QtCore import Qt 
 from configmanager import ConfigManger
@@ -52,6 +53,7 @@ class Settings(QDialog):
 
         conf = self.conf_manager.get_config()
 
+        # populate list
         for example in conf["examples"]:
             self.add_example_entry(example["from_str"], example["result_str"])
 
@@ -127,9 +129,22 @@ class Settings(QDialog):
         self.accept()
 
     def reset_settings(self):
-        self.models_choice.setCurrentText(DEFAULT_MODEL)
-        self.base_url_input.setText(DEFAULT_BASE_URL)
-        self.system_prompt_input.setText(DEFAULT_SYSTEM_MSG)
+        msg = QMessageBox()
+        msg.setWindowTitle("Reset Confirmation")
+        msg.setText("Are you sure you want to reset everything? This will reset everyhing including examples.")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        result = msg.exec()
+        if result == QMessageBox.Yes:
+            self.models_choice.setCurrentText(DEFAULT_MODEL)
+            self.base_url_input.setText(DEFAULT_BASE_URL)
+            self.system_prompt_input.setText(DEFAULT_SYSTEM_MSG)
+            self.reset_examples()
+
+    def reset_examples(self):
+        self.examples_list.clear()
+        for example in DEFAULT_EXAMPLES:
+            self.add_example_entry(example["from_str"], example["result_str"])
 
     def add_example_entry(self, from_txt: str, result_txt: str):
         item = QListWidgetItem()
