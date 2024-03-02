@@ -12,7 +12,7 @@ Create your own infinite Crafting game
 </p>
 
 
-## Installation
+## Installation ⏬
 
 ### Git
 
@@ -40,6 +40,13 @@ git clone https://github.com/Fus3n/infinite-sides
 cd infinite-sides
 python3 start.py
 ```
+
+# Usage/Controls 🎮
+- Click on chips (text with emojis) to add them to the game
+- Click hold and drag them and release on top of another to combine
+- Clear button clears everyhing in game
+- Reset button resets the list/all the chips you have collected and also clears the game view
+- Change all the parameters in `App > Settings`
 
 ### Settings
 
