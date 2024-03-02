@@ -2,7 +2,8 @@ from PySide6.QtWidgets import (
     QGraphicsSceneMouseEvent,
     QGraphicsItem,
     QGraphicsTextItem,
-    QLabel
+    QLabel,
+    QGraphicsDropShadowEffect
 )
 
 from PySide6.QtCore import Qt, QMimeData
@@ -42,15 +43,7 @@ class Chip(QLabel):
 
         if ev.button() == Qt.LeftButton:
             self.add_chip_func(self)
-
-    def mouseMoveEvent(self, e):
-        if e.buttons() == Qt.LeftButton:
-            drag = QDrag(self)
-            mime = QMimeData()
-            drag.setMimeData(mime)
-            drag.exec(Qt.MoveAction)
-
-        super().mouseMoveEvent(e)           
+          
 
 class ChipGraphicsItem(QGraphicsTextItem):
 

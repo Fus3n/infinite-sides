@@ -1,4 +1,4 @@
-from openai import OpenAI, NotFoundError
+from openai import OpenAI, NotFoundError, APIConnectionError
 from consts import DEFAULT_EXAMPLES
 from configmanager import ConfigManger
 
@@ -78,13 +78,15 @@ class BackendLLM:
             response = self.__client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                max_tokens=8,
+                max_tokens=15,
                 n=1,
                 temperature=0,
                 top_p=1,  
             )
         except NotFoundError:
             return None, "Invalid Base Url"
+        except APIConnectionError:
+            return None, "Connection Error, make sure ollama is running in background and try again"
 
         return response.choices[0].message.content, None
 

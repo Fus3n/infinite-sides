@@ -31,13 +31,20 @@ ExampleType = List[ExampleEntry]
 
 DEFAULT_BASE_URL = "http://localhost:11434/v1"
 DEFAULT_EXAMPLES: ExampleType = [
-    {"from_str": "🌍 Earth + ", "result_str": "🌱 Plant"},
+    {"from_str": "🌍 Earth + 💧 Water", "result_str": "🌱 Plant"},
     {"from_str": "💨 Wind + 🌱 Plant", "result_str": "🌼 Dandelion"},
     {"from_str": "🌍 Earth + 🔥 Fire", "result_str": "🌋 Lava"},
     {"from_str": "🌋 Lava + 🌋Lava", "result_str": "🌋 Volcano"},
     {"from_str": "💧 Water + 💨 Wind", "result_str": "🌊 Wave"},
     {"from_str": "🏔️ Mountain + ❄️ Snow", "result_str": "🌨️ Avalanche"},
     {"from_str": "🌞 Sun + ☔ Rain", "result_str": "🌈 Rainbow"},
+]
+
+DEFAULT_CHIPS = [
+    "🌍 Earth",
+    "💨 Wind",
+    "💧 Water",
+    "🔥 Fire",
 ]
 
 MODELS = [
