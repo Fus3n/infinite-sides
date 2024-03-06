@@ -14,6 +14,9 @@ Create your own infinite Crafting game
 
 ## Installation ⏬
 
+### SourceForge
+[![Download Infinite Sides](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/infinite-sides/files/latest/download)
+
 ### Git
 
 Requirements
