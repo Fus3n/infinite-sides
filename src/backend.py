@@ -65,7 +65,17 @@ class BackendLLM:
         
         # TODO: don't check it every generation.
         self.reload_settings()
-        
+
+        result = f'"{first} + {second}"'
+        combined_input = f"{first} + {second}"
+        reversed_input = f"{second} + {first}"
+        print(combined_input)
+        for example in DEFAULT_EXAMPLES:
+            print(example['from_str'])
+            if combined_input == example['from_str'] or reversed_input == example['from_str']:
+                print("Found!")
+                return example['result_str'], None  # Return the result from example
+
         result = f'"{first} + {second}"'
 
         self.convert_examples()
