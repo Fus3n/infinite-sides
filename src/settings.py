@@ -10,20 +10,32 @@ from PySide6.QtWidgets import (
     QComboBox,
     QListWidget,
     QListWidgetItem,
-    QMessageBox
+    QMessageBox,
+    QProgressBar,
 )
-from PySide6.QtCore import Qt 
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
+from fetch_ollama_models import FetchModels
 from configmanager import ConfigManger
-from consts import MODELS, DEFAULT_SYSTEM_MSG, DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_EXAMPLES, DEFAULT_CHIPS
+from consts import DEFAULT_SYSTEM_MSG, DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_EXAMPLES, DEFAULT_CHIPS
 from example_entry_widget import ExampleEntry, ChipEntry
+from ollama import Client
 
 class Settings(QDialog):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.conf_manager = ConfigManger()
+        conf = self.conf_manager.get_config()
+
         self.setWindowTitle("Settings")
         self.setMinimumSize(980, 650)
+        self.__client = Client(host=conf["base_url"])
+        
+        self.model_fetcher = FetchModels(self.__client)
+        self.model_fetcher.started.connect(self.fetch_models_started)
+        self.model_fetcher.fetched.connect(self.fetch_models_finished)
+        self.model_fetcher.error.connect(self.fetch_models_error)
 
         self.heading_layout = QHBoxLayout()
         self.heading_layout.setContentsMargins(0, 0, 0, 0)
@@ -65,8 +77,6 @@ class Settings(QDialog):
         self.chips_lay.addWidget(add_chip_btn)
         self.chips_lay.addWidget(self.chips_list)
 
-        conf = self.conf_manager.get_config()
-
         # populate list
         for example in conf["examples"]:
             self.add_example_entry(example["from_str"], example["result_str"])
@@ -78,12 +88,32 @@ class Settings(QDialog):
         self.lay.setSpacing(5)
 
         self.lay.addLayout(self.heading_layout)  # Add heading_layout to the main layout
+        self.lay.addWidget(QLabel("Model"))
+
+        self.models_lay = QHBoxLayout()
+        self.lay.addLayout(self.models_lay)
 
         self.models_choice = QComboBox()
-        self.models_choice.addItems(MODELS)
-        self.models_choice.setCurrentText(conf["model"])
-        self.lay.addWidget(QLabel("Model"))
-        self.lay.addWidget(self.models_choice)
+        self.refresh_btn = QLabel()
+        self.loading_pb = QProgressBar()
+        self.loading_pb.setRange(0, 0)
+        self.loading_pb.setMaximumHeight(25)
+        self.models_lay.addWidget(self.models_choice, stretch=1)
+
+        # check of conf dict has the key "models" and if so if the list is empty or not
+        if "ollama_models" in conf and conf["ollama_models"]:
+            self.models_choice.addItems(conf["ollama_models"])
+            self.models_choice.setCurrentText(conf["model"])
+        else:
+            self.model_fetcher.start()
+        
+        self.refresh_btn.setCursor(Qt.PointingHandCursor)
+        # on click
+        self.refresh_btn.mousePressEvent = lambda ev: self.model_fetcher.start()
+        icon = QIcon("icons/refresh-icon.svg")
+        self.refresh_btn.setPixmap(icon.pixmap(18)) # TODO: update to have file path constants
+        self.refresh_btn.setStyleSheet("background-color: transparent; color: red;;")
+        self.models_lay.addWidget(self.refresh_btn)
 
         self.lay.addWidget(QLabel("Base URL"))
         self.base_url_input = QLineEdit()
@@ -100,7 +130,6 @@ class Settings(QDialog):
         self.system_prompt_input.setPlaceholderText("System prompt")
         self.system_prompt_input.setText(conf["system_msg"])
         self.lay.addWidget(self.system_prompt_input)
-
 
         buttons_layout = QHBoxLayout()
         buttons_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -126,9 +155,36 @@ class Settings(QDialog):
 
         self.setLayout(self.dialog_lay)
 
+    def fetch_models_started(self):
+        self.models_lay.removeWidget(self.models_choice)
+        self.models_lay.insertWidget(0, self.loading_pb, stretch=1)
+        self.refresh_btn.setEnabled(False)
+
+    def reset_models_layout(self):
+        self.loading_pb.setParent(None)
+        self.models_lay.insertWidget(0, self.models_choice, stretch=1)
+
+    def fetch_models_finished(self, ollama_models: list[str]):
+        self.models_choice.clear()
+        self.models_choice.addItems(ollama_models)
+        self.reset_models_layout()
+
+        current_model = self.conf_manager.get_value("model")
+        if current_model in ollama_models:
+            self.models_choice.setCurrentText(current_model)
+        
+        self.refresh_btn.setEnabled(True)
+        self.conf_manager.set_key_value("ollama_models", ollama_models)
+
+    def fetch_models_error(self, error: str):
+        self.reset_models_layout()
+        self.refresh_btn.setEnabled(True)
+        QMessageBox.critical(self, "Error", error)
+
     def save_settings(self):
         conf = self.conf_manager.get_config()
         conf["model"] = self.models_choice.currentText()
+        conf["ollama_models"] = [self.models_choice.itemText(i) for i in range(self.models_choice.count())]
         conf["base_url"] = self.base_url_input.text()
         conf["system_msg"] = self.system_prompt_input.toPlainText()
 
@@ -153,6 +209,17 @@ class Settings(QDialog):
         self.accept()
 
     def reset_settings(self):
+        # ask for confirmation in dialog
+        dialog = QMessageBox()
+        dialog.setWindowTitle("Reset Settings")
+        dialog.setText("Are you sure you want to reset all settings?")
+        dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dialog.setDefaultButton(QMessageBox.No)
+
+        result = dialog.exec()
+        if result == QMessageBox.No:
+            return
+        
         self.models_choice.setCurrentText(DEFAULT_MODEL)
         self.base_url_input.setText(DEFAULT_BASE_URL)
         self.system_prompt_input.setText(DEFAULT_SYSTEM_MSG)

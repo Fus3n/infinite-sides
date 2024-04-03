@@ -47,10 +47,4 @@ DEFAULT_CHIPS = [
     "🔥 Fire",
 ]
 
-MODELS = [
-    "llama2",
-    "mistral",
-    "llava"
-]
-
 DEFAULT_MODEL = "llama2"

@@ -1,4 +1,5 @@
-from openai import OpenAI, NotFoundError, APIConnectionError
+# from openai import OpenAI, NotFoundError, APIConnectionError
+from ollama import Client, RequestError, ChatResponse, ResponseError
 from consts import DEFAULT_EXAMPLES
 from configmanager import ConfigManger
 
@@ -15,19 +16,17 @@ class BackendLLM:
         conf = self.conf_manager.get_config()
         self.base_url: str = conf["base_url"]
         self.model: str = conf["model"]
-        self.simple_check()
+        self.check_base_url()
 
         self.examples = DEFAULT_EXAMPLES
         self.system_msg = conf["system_msg"]
-
-        self.__client = OpenAI(
-            base_url = self.base_url,
-            api_key="ollama",
+        self.__client = Client(
+            host=self.base_url,
         )
 
         self.final_examples = []
 
-    def simple_check(self):
+    def check_base_url(self):
         if not self.base_url.endswith("/v1"):
             if self.base_url[-1] == "/":
                 self.base_url += "v1"
@@ -39,10 +38,9 @@ class BackendLLM:
         conf = self.conf_manager.get_config()
         if self.base_url != (new_base_url := conf["base_url"]):
             self.base_url = new_base_url
-            self.simple_check()
-            self.__client = OpenAI(
-                base_url = self.base_url,
-                api_key="ollama",
+            self.check_base_url()
+            self.__client = Client(
+                host=self.base_url,
             )
 
         self.system_msg = conf["system_msg"]
@@ -63,7 +61,6 @@ class BackendLLM:
         if not first or not second:
             return None, "Invalid Input"
         
-        # TODO: don't check it every generation.
         self.reload_settings()
         
         result = f'"{first} + {second}"'
@@ -75,20 +72,22 @@ class BackendLLM:
         messages.extend(self.final_examples)
         messages.append({"role": "user", "content": result})
         try:
-            response = self.__client.chat.completions.create(
+            response: ChatResponse = self.__client.chat(
                 model=self.model,
                 messages=messages,
-                max_tokens=15,
-                n=1,
-                temperature=0,
-                top_p=1,  
+                stream=False,
+                options={
+                    "top_p": 1,
+                    "temperature": 0,
+                    "stop": ["[\n", "\r\n", "\n", "\"", "<|im_end|>"]
+                }
             )
-        except NotFoundError:
-            return None, "Invalid Base Url"
-        except APIConnectionError:
-            return None, "Connection Error, make sure ollama is running in background and try again"
+        except RequestError as e:
+            return None, str(e)
+        except ResponseError as e:
+            return None, str(e)
 
-        return response.choices[0].message.content, None
+        return response['message']['content'], None
 
 if __name__ == '__main__':
     llm = BackendLLM()
