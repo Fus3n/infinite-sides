@@ -62,5 +62,10 @@ You can also port forward using ngrok and use that url if you want and share it 
 
 > This software is still under development, alot of features are missing and alot of bugs, the plan is to make it so people can make different types of crafitng game for example a minecraft edition or one thats only related a specific subject and people can make custom system prompts and share with others and enjoy it
 
+### TODO
+- Logo for app
+- Executables with installer
+- Fix the light mode
+
 Licensed under the MIT License.
 
