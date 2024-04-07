@@ -11,6 +11,8 @@ Create your own infinite Crafting game
   <img src="./screenshots/screen-2.png" width="45%" />
 </p>
 
+[![Discord](https://img.shields.io/badge/Discord-R7TcKrQv?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/R7TcKrQv)
+
 
 ## Installation ⏬
 
