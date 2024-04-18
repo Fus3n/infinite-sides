@@ -79,7 +79,17 @@ class BackendLLM:
                 options={
                     "top_p": 1,
                     "temperature": 0,
-                    "stop": ["[\n", "\r\n", "\n", "\"", "<|im_end|>"]
+                    "stop": [
+                        "[\n", 
+                        "\r\n", 
+                        "\n", 
+                        "\"", 
+                        "<|im_end|>",
+                        "<|start_header_id|>",
+                        "<|end_header_id|>",
+                        "<|eot_id|>",
+                        "<|reserved_special_token",
+                    ]
                 }
             )
         except RequestError as e:
